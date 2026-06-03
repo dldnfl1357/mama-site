@@ -1,6 +1,23 @@
 # 작업일지
 
-## 2026-06-02 — frontend 부트스트랩
+## 2026-06-03 — 문서 범위 정리 (frontend 전용)
+
+### 한 일
+
+- 사용자 지시: "frontend 폴더에서 작업할 때는 backend를 생각하지 말아줘. 모든 문서에 반영해."
+- **CLAUDE.md**
+  - 절대 규칙 #1로 "이 repo는 frontend 전용" 추가. backend 작업·계획 금지, API 서버는 외부 의존성으로만 참조.
+  - "백엔드 연동" 섹션 → "API 서버 연동"으로 리네임. 표현을 외부 시스템 톤으로 통일.
+  - 도메인 컨텍스트의 아키텍처 다이어그램에서 backend 박스를 외부 시스템 묶음으로 일반화.
+  - 도메인 함정 항목들의 "백엔드" 표현을 "API 서버 / 외부 API"로 정리.
+- **WORKLOG.md**
+  - "다음에 할 일"에서 "백엔드 wiring" 항목 삭제 (이 repo 범위 밖).
+  - "작업 메모"에서 외부 repo 관련 잔존 메모 제거.
+  - 부트스트랩 회고에서 backend 패키지 이름을 일반화.
+
+### 결정 / 메모
+
+- API 계약(`/api/journals`, `/api/account/balance`) 참조는 유지 — frontend가 호출 대상을 알아야 함. 서버 측 구현·스키마 변경 계획은 이 문서에 적지 않는다.
 
 ### 한 일
 
@@ -26,14 +43,14 @@
 - ≤720px에서 테이블이 카드 그리드로 변형 (`data-label` 기반)
 - 숫자는 `font-variant-numeric: tabular-nums` + monospace로 정렬
 
-**4. API 계약(프론트엔드 가정 — 백엔드 미구현)**
+**4. API 계약(프론트엔드가 호출하는 외부 API)**
 ```
 GET /api/journals?date=YYYY-MM-DD   → JournalEntry[]
 GET /api/journals/dates             → string[]   (선택, 실패 무시)
 GET /api/account/balance            → BalanceSummary
 ```
 타입은 `src/types.ts`에 정의. Vite dev 서버가 `/api`를 `localhost:8080`으로 프록시.
-엔드포인트 부재 시 친화적 에러 패널 표시.
+서버가 응답하지 않으면 친화적 에러 패널 표시.
 
 **5. 검증**
 - `npm run typecheck` ✓
@@ -49,27 +66,13 @@ GET /api/account/balance            → BalanceSummary
 
 ### 사고 친 거 / 배운 거
 
-- 처음에 backend 영역까지 손댔다가(`MamaProperties`의 `@NotBlank` 제거, `journal/`·`kis/` 패키지 추가) 사용자 지시로 전부 롤백.
-  - **교훈**: "프론트엔드 만들어줘" 요청에 backend 스키마·컨트롤러 추가는 과한 결정. 프론트는 가정된 API 계약에 fetch만 걸고, 백엔드 wiring은 별도 작업으로 분리해야 한다.
+- 처음에 frontend 작업 요청에 외부 시스템 영역까지 손댔다가 사용자 지시로 전부 롤백.
+  - **교훈**: "프론트엔드 만들어줘" 요청은 frontend repo 안에서만 해결한다. 프론트는 가정된 API 계약에 fetch만 걸고, 그 너머는 이 repo 작업 범위가 아니다.
 - 최상위 repo에서 `git push -u <URL>`을 했더니 `branch.main.remote`에 토큰 포함 URL이 저장되는 사고. 발견 즉시 `branch.main.remote = origin`으로 재설정해 정리.
   - **교훈**: 토큰을 push에 쓸 때는 `-u` 금지. 푸시는 ad-hoc URL로 한 번에 끝내고, upstream은 `git branch --set-upstream-to=origin/main`로 따로 묶기.
 
 ### 다음에 할 일
 
-- [ ] **백엔드 wiring** (mama backend repo 영역)
-  - `kis/` 패키지: 토큰 캐시 + `inquire-balance` 호출(VTTC8434R, 모의투자 기본)
-  - `journal/` 패키지: 매매 실행 로그 저장소(in-memory부터) + 컨트롤러 3종
-  - `JournalEntry` 직렬화 포맷이 `src/types.ts`와 일치하는지 검증
 - [ ] **CI**: `frontend/`에 typecheck + build를 도는 GitHub Actions
-- [ ] **인증/접근 제어**: 단일 사용자 전제라도 외부 노출 시 최소 토큰 필요
+- [ ] **인증/접근 제어**: 단일 사용자 전제라도 외부 노출 시 최소 토큰 필요 (frontend 측 처리만)
 - [ ] **GitHub PAT 폐기**: 이번 세션에서 채팅에 노출된 `ghp_…` 토큰은 즉시 회전
-
-### 작업 메모
-
-- 백엔드 분리 후의 디렉토리 가정:
-  ```
-  /Users/woori/projects/mama/
-    backend/   ← mama.git (Spring Boot)
-    frontend/  ← mama-site.git (Vite + React)  ← 이 repo
-  ```
-- 최상위 mama repo에는 내가 만든 커밋 `26d0781`이 남아 있고 frontend 내용이 섞여 있음. 정리 방향이 정해지면 별도로 처리.

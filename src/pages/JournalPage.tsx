@@ -120,7 +120,7 @@ export function JournalPage() {
         <div className="state state--error">
           <strong>매매일지를 불러올 수 없습니다.</strong>
           <span>{error}</span>
-          <small>백엔드 <code>/api/journals</code> 엔드포인트가 구동 중인지 확인하세요.</small>
+          <small>API 서버의 <code>/api/journals</code> 엔드포인트가 구동 중인지 확인하세요.</small>
         </div>
       )}
 

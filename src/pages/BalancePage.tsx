@@ -51,7 +51,7 @@ export function BalancePage() {
         <div className="state state--error">
           <strong>잔고를 불러올 수 없습니다.</strong>
           <span>{error}</span>
-          <small>백엔드 <code>/api/account/balance</code> 엔드포인트와 KIS 자격증명을 확인하세요.</small>
+          <small>API 서버의 <code>/api/account/balance</code> 엔드포인트가 응답하는지 확인하세요.</small>
         </div>
       )}
 
