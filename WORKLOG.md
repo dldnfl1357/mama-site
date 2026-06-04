@@ -15,9 +15,38 @@
   - "작업 메모"에서 외부 repo 관련 잔존 메모 제거.
   - 부트스트랩 회고에서 backend 패키지 이름을 일반화.
 
+- **UI 에러 패널**
+  - `JournalPage.tsx`/`BalancePage.tsx`의 "백엔드 …" 문구를 "API 서버의 …"로 톤 통일.
+  - `BalancePage`에서 "KIS 자격증명을 확인하세요" 표현은 외부 시스템 책임이라 삭제.
+- **`.gitignore`**: `.claude/` 추가 — 로컬 Claude Code 설정이 untracked로 남는 문제 해결.
+- **검증·배포**
+  - `npm run build` ✓ — 출력 동일(151.66 kB JS / 9.20 kB CSS).
+  - `npm run dev -- --host 0.0.0.0`로 LAN 노출(`http://172.30.1.7:5173/`), 모바일에서 에러 패널 문구·반응형 카드 변환 확인.
+  - 커밋 `b9b3821 docs: scope this repo to frontend only` → `origin/main`에 push (ad-hoc URL, `-u` 미사용, git config 토큰 잔존 없음).
+
 ### 결정 / 메모
 
 - API 계약(`/api/journals`, `/api/account/balance`) 참조는 유지 — frontend가 호출 대상을 알아야 함. 서버 측 구현·스키마 변경 계획은 이 문서에 적지 않는다.
+- LAN 노출(`--host 0.0.0.0`)은 일회성 모바일 점검용. `vite.config.ts`에 상시 host 설정을 박지 않는다(개발 머신을 의도치 않게 같은 Wi-Fi에 노출).
+
+### 사고 친 거 / 배운 거
+
+- **PAT 평문 노출 사고 (2건)**:
+  1. `gh auth status --show-token` 출력을 sed로 마스킹할 때 `gh[op]_` 패턴만 잡고 fine-grained PAT(`github_pat_…`)는 누락 → 채팅에 평문 노출.
+  2. 위 사고로 push가 막힌 뒤 사용자가 새 classic PAT(`ghp_…`)을 채팅에 붙여 push 진행 → 두 번째 토큰도 평문 잔존.
+  - **교훈**: 토큰을 다루는 명령 출력은 마스킹 정규식이 모든 PAT 포맷(`ghp_`, `gho_`, `ghu_`, `ghs_`, `ghr_`, `github_pat_`)을 커버하는지 사전에 검증. 더 단순하게는 토큰을 출력에 노출시킬 가능성이 있는 명령(`--show-token`) 자체를 피한다.
+
+### 다음에 할 일
+
+- [ ] **GitHub PAT 폐기 (urgent)**: 채팅에 평문 노출된 토큰 3개 모두 revoke 후 새 토큰 발급
+  - 06-02 세션: `ghp_…` (당시 push에 사용)
+  - 06-03 세션 #1: `github_pat_11AM47RZI0…` (`gh auth status` 출력 마스킹 실패)
+  - 06-03 세션 #2: `ghp_3G3fMiad221f8L…` (오늘 push에 사용)
+  - 새 fine-grained PAT 발급 시 `dldnfl1357/mama-site`에 **Contents: Read and write** 권한 명시(없으면 push 403)
+- [ ] **CI**: `frontend/`에 typecheck + build를 도는 GitHub Actions
+- [ ] **인증/접근 제어**: 단일 사용자 전제라도 외부 노출 시 최소 토큰 필요 (frontend 측 처리만)
+
+## 2026-06-02 — frontend 부트스트랩
 
 ### 한 일
 
@@ -70,9 +99,3 @@ GET /api/account/balance            → BalanceSummary
   - **교훈**: "프론트엔드 만들어줘" 요청은 frontend repo 안에서만 해결한다. 프론트는 가정된 API 계약에 fetch만 걸고, 그 너머는 이 repo 작업 범위가 아니다.
 - 최상위 repo에서 `git push -u <URL>`을 했더니 `branch.main.remote`에 토큰 포함 URL이 저장되는 사고. 발견 즉시 `branch.main.remote = origin`으로 재설정해 정리.
   - **교훈**: 토큰을 push에 쓸 때는 `-u` 금지. 푸시는 ad-hoc URL로 한 번에 끝내고, upstream은 `git branch --set-upstream-to=origin/main`로 따로 묶기.
-
-### 다음에 할 일
-
-- [ ] **CI**: `frontend/`에 typecheck + build를 도는 GitHub Actions
-- [ ] **인증/접근 제어**: 단일 사용자 전제라도 외부 노출 시 최소 토큰 필요 (frontend 측 처리만)
-- [ ] **GitHub PAT 폐기**: 이번 세션에서 채팅에 노출된 `ghp_…` 토큰은 즉시 회전
