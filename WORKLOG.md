@@ -1,5 +1,31 @@
 # 작업일지
 
+## 2026-06-04 — 파이프라인 뷰 설계·계획 (구현 보류)
+
+### 한 일
+
+- 사용자 요청: 상위 폴더 `mama`(backend) 코드를 보고 frontend에 알맞은 기능을 추가.
+- backend 점검: `mama/src/main/java/com/serveone/mama/` 트리에 `dart`, `llm`, `signal`, `kis`, `executor` 모듈 존재. 단, **`@RestController` / `@*Mapping` 0개** — 아직 HTTP 엔드포인트를 노출하지 않는 상태. 기존 frontend의 `/api/journals*`, `/api/account/balance`도 backend엔 미구현(가상 계약 위에서 동작 중).
+- backend에 있지만 frontend에 없는 도메인 정리: 공시(DART, 영속화), 신호(LLM 결과, 영속화 안 됨), 주문 실행 결과(영속화 안 됨).
+- 브레인스토밍 결과 **공시→신호→주문 실행을 한 화면에서 추적하는 "파이프라인" 탭**을 새로 만들기로 결정. 조회 축은 기존 매매일지와 같은 **날짜별 피드**. 계약은 **풀 파이프라인 단일 endpoint** 가정.
+- 문서 2종 작성:
+  - `docs/superpowers/specs/2026-06-04-pipeline-view-design.md` — 설계 명세 (API 계약, 화면 구성, 색상 컨벤션, 의도적 미구현).
+  - `docs/superpowers/plans/2026-06-04-pipeline-view.md` — 7개 task로 분할된 구현 계획 (타입→API→페이지→스타일→탭 연결→브라우저 검증→WORKLOG).
+
+### 결정 / 메모
+
+- **CLAUDE.md 절대 규칙 #1** 재확인: 이 repo에서 backend 작업·계획은 적지 않는다. `/api/pipeline*`은 가상 계약만 정의하고, 미구현 시 기존 패턴대로 에러 패널 표시.
+- **단위 테스트 인프라 부재** — `package.json`에 `test` 스크립트 없음. 검증은 `npm run typecheck` + `npm run build` + 브라우저(데스크톱·≤720px) 수동 확인.
+- **`--warn` 토큰은 이미 `styles.css:16`에 존재** — spec 초안의 "신규 토큰 1개 추가"는 plan에서 제거.
+- 자동 폴링·정렬·필터·인증 게이트는 의도적 미구현 (YAGNI, 외부 API 호출량 함정).
+- 색상은 한국 증시 컨벤션 그대로: BUY=빨강, SELL=파랑, HOLD=중립 회색. 실행 상태 배지(EXECUTED/SKIPPED/FAILED)는 증시 색상과 분리해 텍스트·`--warn` 사용.
+
+### 보류 / 다음에 할 일
+
+- [ ] **파이프라인 뷰 구현** — `docs/superpowers/plans/2026-06-04-pipeline-view.md`의 Task 1~7 순서대로 진행.
+- [ ] backend가 `/api/pipeline*` 엔드포인트를 노출하면 실데이터로 회귀 확인. 그 시점까지는 새 탭이 에러 패널만 표시.
+- [ ] 06-03 세션부터 이월된 항목들(GitHub PAT 폐기, CI, 인증/접근 제어)은 그대로 미해결.
+
 ## 2026-06-03 — 문서 범위 정리 (frontend 전용)
 
 ### 한 일
