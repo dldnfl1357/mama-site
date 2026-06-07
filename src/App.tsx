@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { JournalPage } from "./pages/JournalPage";
 import { BalancePage } from "./pages/BalancePage";
+import { PipelinePage } from "./pages/PipelinePage";
 
-type Tab = "journal" | "balance";
+type Tab = "journal" | "balance" | "pipeline";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "journal", label: "매매일지" },
   { id: "balance", label: "계좌잔고" },
+  { id: "pipeline", label: "파이프라인" },
 ];
 
 export function App() {
@@ -39,7 +41,13 @@ export function App() {
       </header>
 
       <main className="content">
-        {tab === "journal" ? <JournalPage /> : <BalancePage />}
+        {tab === "journal" ? (
+          <JournalPage />
+        ) : tab === "balance" ? (
+          <BalancePage />
+        ) : (
+          <PipelinePage />
+        )}
       </main>
     </div>
   );
