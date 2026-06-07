@@ -1,5 +1,35 @@
 # 작업일지
 
+## 2026-06-07 — 파이프라인 뷰 구현
+
+### 한 일
+
+- 새 탭 **"파이프라인"** 추가 — backend 도메인(공시→신호→주문 실행)을 한 화면에서 추적하는 읽기 전용 뷰. 06-04 세션에서 작성한 `docs/superpowers/plans/2026-06-04-pipeline-view.md`의 Task 1~7을 순서대로 진행.
+- 가상 API 계약 `GET /api/pipeline?date=` / `GET /api/pipeline/dates`. backend는 컨트롤러 미노출 상태라 dev 환경에서 ECONNREFUSED → 5xx로 떨어지며 기존 패턴대로 에러 패널 표시.
+- 화면 구성: 날짜 선택 + 수집 날짜 pill row + 요약 카드 4종(공시·신호 분포·실행·스킵) + 테이블(수집시각·종목·공시명·신호·실행) + 행 클릭 시 상세(공시명 전체 + 신호 reasoning + DART 링크) 펼침.
+- 색상: BUY=빨강, SELL=파랑(증시 컨벤션), HOLD=회색, EXECUTED=중립 진한 텍스트, SKIPPED=회색, FAILED=`--warn` 오렌지.
+- 신규 의존성·전역 상태 라이브러리 없음. 기존 `format.ts` 헬퍼와 `styles.css` 토큰 재사용.
+- 커밋 5개로 분할 — types / api / page / styles / App wiring + 본 WORKLOG.
+
+### 검증
+
+- `npm run typecheck` ✓ (각 task 종료 시점마다)
+- `npm run build` ✓ — JS 151.66 → 157.38 kB(raw, +5.7 kB), gzip 48.66 → 49.85 kB(+1.2 kB). CSS 9.20 → 11.18 kB(+2 kB).
+- `npm run dev` 기동 후 `/`(200), `/src/pages/PipelinePage.tsx`(200), `/src/App.tsx`(200) 응답 확인. `/api/pipeline*` 호출은 ECONNREFUSED → 500 — 에러 패널 경로 동작 조건 충족.
+- **픽셀 단위 시각 검증은 미수행** — 헤드리스 브라우저 자동화가 없는 환경이라 실제 렌더 확인은 사용자 브라우저에서 추가 점검 필요.
+
+### 결정 / 메모
+
+- backend의 신호·실행 결과는 영속화돼 있지 않지만 프론트 계약은 **풀 파이프라인** 가정으로 단일 endpoint 설계. 추후 backend 측에서 동일 shape으로 채워 넣으면 곧바로 동작.
+- 자동 폴링·정렬·필터·인증 게이트는 의도적으로 미구현 (YAGNI, 외부 API 호출량 함정).
+- 단위 테스트 인프라는 그대로 부재. typecheck/build + 브라우저 수동 확인으로 검증.
+
+### 다음에 할 일
+
+- [ ] 사용자가 브라우저에서 신규 탭 클릭 시 에러 패널·요약 카드·테이블 카드 변환(≤720px) 시각 확인.
+- [ ] backend가 `/api/pipeline*` 엔드포인트를 노출하면 실데이터로 회귀 확인 (행 클릭 → 상세 펼침, BUY/SELL/HOLD 배지 색).
+- [ ] 06-03 세션부터 이월된 항목(GitHub PAT 폐기, CI, 인증/접근 제어)은 그대로 미해결.
+
 ## 2026-06-04 — 파이프라인 뷰 설계·계획 (구현 보류)
 
 ### 한 일
