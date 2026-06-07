@@ -344,6 +344,16 @@ code {
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
+.summary--pipeline {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.card__value--compact {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -423,6 +433,52 @@ code {
   background: color-mix(in oklab, var(--surface-2) 60%, transparent);
 }
 
+.row-clickable {
+  cursor: pointer;
+}
+
+.row-clickable--open {
+  background: color-mix(in oklab, var(--surface-2) 70%, transparent);
+}
+
+.row-detail td {
+  background: var(--surface-2);
+  padding: 0;
+}
+
+.detail {
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px dashed var(--border);
+}
+
+.detail__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+
+.detail__value {
+  color: var(--text);
+  white-space: pre-wrap;
+  line-height: 1.55;
+}
+
+.detail__link {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.detail__link:hover {
+  text-decoration: underline;
+}
+
 .num {
   text-align: right;
   font-family: var(--font-mono);
@@ -470,6 +526,64 @@ code {
 .badge--sell {
   background: color-mix(in oklab, var(--sell) 14%, transparent);
   color: var(--sell);
+}
+
+.badge--hold {
+  background: var(--surface-2);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.badge--executed {
+  background: color-mix(in oklab, var(--text) 10%, transparent);
+  color: var(--text);
+}
+
+.badge--skipped {
+  background: var(--surface-2);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.badge--failed {
+  background: color-mix(in oklab, var(--warn) 18%, transparent);
+  color: var(--warn);
+}
+
+.signal,
+.execution {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.signal__confidence {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.execution__detail {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cell-empty {
+  color: var(--text-dim);
+}
+
+.report-name {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
 }
 
 .pnl--pos { color: var(--pos); }
@@ -623,6 +737,41 @@ code {
   .table tbody td.reason::before {
     display: block;
     padding-bottom: 2px;
+  }
+
+  .row-detail {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+    margin-top: -6px;
+  }
+
+  .row-detail td {
+    padding: 0;
+    background: transparent;
+  }
+
+  .row-detail .detail {
+    border-top: 0;
+    padding: 4px 0 8px;
+  }
+
+  .report-name {
+    -webkit-line-clamp: unset;
+  }
+
+  .signal,
+  .execution {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .execution__detail {
+    max-width: 100%;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
   }
 
   /* Make stock cell + badge the "header" row of each card */
