@@ -1,4 +1,4 @@
-import type { BalanceSummary, JournalEntry } from "./types";
+import type { BalanceSummary, JournalEntry, PipelineRow } from "./types";
 
 async function getJson<T>(url: string): Promise<T> {
   const response = await fetch(url, {
@@ -22,4 +22,13 @@ export function fetchAvailableDates(): Promise<string[]> {
 
 export function fetchBalance(): Promise<BalanceSummary> {
   return getJson<BalanceSummary>("/api/account/balance");
+}
+
+export function fetchPipeline(date: string): Promise<PipelineRow[]> {
+  const params = new URLSearchParams({ date });
+  return getJson<PipelineRow[]>(`/api/pipeline?${params.toString()}`);
+}
+
+export function fetchPipelineDates(): Promise<string[]> {
+  return getJson<string[]>("/api/pipeline/dates");
 }
